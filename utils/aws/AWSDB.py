@@ -28,6 +28,11 @@ def get_next_reddit_batch_id():
     return MySQLDB.get_next_reddit_batch_id(conn_aws)
 
 
+def get_reddit_posts(subreddit):
+
+    return MySQLDB.get_reddit_posts(conn_aws, subreddit)
+
+
 def get_reddit_post_names():
 
     return MySQLDB.get_reddit_post_names(conn_aws)

@@ -37,12 +37,18 @@ def close_connection(conn):
 # Execute a SQL prepared statement with the list_values as an array of parameters to the statement
 def execute_sql(conn, sql, list_values=[], close_conn=False):
 
+    rows = None
+
     try:
 
         cursor = conn.cursor(prepared=True)
 
         if len(list_values) == 0:
+
             cursor.execute(sql)
+
+            if cursor.with_rows:
+                rows = cursor.fetchall()
 
         else:
 
@@ -54,14 +60,9 @@ def execute_sql(conn, sql, list_values=[], close_conn=False):
 
     except Error as error:
 
-        print("sql query failed: {}".format(error))
+        print(f'sql query failed: {error}')
 
     finally:
-
-        rows = None
-
-        if cursor.with_rows:
-            rows = cursor.fetchall()
 
         if close_conn:
             conn.close()
@@ -123,8 +124,19 @@ def get_next_reddit_batch_id(conn):
             return row[0] + 1
 
 
+# Returns all the Reddit posts by subreddit
+def get_reddit_posts(conn, subreddit):
+
+    sql_posts = f'SELECT * FROM ' + TBL_POSTS_REDDIT + \
+                        ' WHERE ' + COL_SUBREDDIT + '=\'' + subreddit + '\''
+
+    return [RedditPost(row[0], row[1], row[2], row[3], created=row[5], batch_id=row[4])
+            for row in execute_sql(conn, sql_posts)]
+
+
 # Returns all the Reddit post names
 def get_reddit_post_names(conn):
+
     sql_post_names = 'SELECT ' + COL_NAME + ' FROM ' + TBL_POSTS_REDDIT
 
     return [row[0] for row in execute_sql(conn, sql_post_names)]
