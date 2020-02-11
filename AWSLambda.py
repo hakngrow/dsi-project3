@@ -12,10 +12,10 @@ def lambda_handler(event, context):
     }
 
 
-'''
-posts = db.get_reddit_posts('worldnews')
+def get_posts(subreddit):
 
-for post in posts:
-    pp.pprint(post.__dict__, indent=4)
-'''
+    posts = db.get_reddit_posts(subreddit)
+
+    for post in posts:
+        pp.pprint(post.__dict__, indent=4)
 
